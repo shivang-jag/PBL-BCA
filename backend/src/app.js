@@ -49,9 +49,15 @@ const authLimiter = rateLimit({
 	legacyHeaders: false,
 });
 
+function normalizeOrigin(value) {
+	const s = String(value || '').trim();
+	if (!s) return '';
+	return s.replace(/\/+$/, '');
+}
+
 const allowedOrigins = String(process.env.ALLOWED_ORIGINS || '')
 	.split(',')
-	.map((s) => s.trim())
+	.map(normalizeOrigin)
 	.filter(Boolean);
 
 if (!allowedOrigins.length && process.env.NODE_ENV !== 'production') {
@@ -69,7 +75,8 @@ app.use(
 		origin(origin, callback) {
 			// Allow requests without an Origin header (e.g., curl, server-to-server).
 			if (!origin) return callback(null, true);
-			if (allowedOrigins.includes(origin)) return callback(null, true);
+			const normalized = normalizeOrigin(origin);
+			if (allowedOrigins.includes(normalized)) return callback(null, true);
 			return callback(null, false);
 		},
 	})
