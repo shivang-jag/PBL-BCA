@@ -15,7 +15,7 @@ export default function DashboardHeader() {
   const menuRef = useRef(null)
   const menuId = 'dashboard-user-menu'
 
-  const collegeName = 'PBL – BCA'
+  const collegeName = 'Graphic Era Hill University'
   const programName = 'Bachelor of Computer Applications (BCA)'
 
   useEffect(() => {
