@@ -91,6 +91,11 @@ if (shouldHttpLog) {
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+// Friendly root response for platform probes / users opening the service URL.
+app.get('/', (req, res) => {
+	res.json({ ok: true, service: 'pbl-bca-backend', health: '/health', apiBase: '/api' });
+});
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api', academicRoutes);
 app.use('/api', teamRoutes);
