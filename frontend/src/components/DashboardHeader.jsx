@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 function initialsFromUser(user) {
@@ -15,15 +15,8 @@ export default function DashboardHeader() {
   const menuRef = useRef(null)
   const menuId = 'dashboard-user-menu'
 
-  const collegeName = useMemo(
-    () => import.meta.env.VITE_COLLEGE_NAME || 'College',
-    []
-  )
-
-  const programName = useMemo(
-    () => import.meta.env.VITE_PROGRAM_NAME || '',
-    []
-  )
+  const collegeName = 'PBL – BCA'
+  const programName = 'Bachelor of Computer Applications (BCA)'
 
   useEffect(() => {
     function onDocClick(e) {
@@ -48,17 +41,15 @@ export default function DashboardHeader() {
             />
             <div className="leading-tight">
               <div className="text-sm font-semibold tracking-tight text-slate-900">{collegeName}</div>
-              <div className="text-xs text-slate-600">PBL System</div>
+              <div className="text-xs text-slate-600">{programName}</div>
             </div>
           </div>
 
-          {programName ? (
-            <div className="hidden md:block">
-              <div className="rounded-full border border-white/30 bg-white/50 px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm">
-                {programName}
-              </div>
+          <div className="hidden md:block">
+            <div className="rounded-full border border-white/30 bg-white/50 px-4 py-2 text-xs font-semibold text-slate-800 shadow-sm">
+              PBL System
             </div>
-          ) : null}
+          </div>
 
           <div className="relative" ref={menuRef}>
             <button
