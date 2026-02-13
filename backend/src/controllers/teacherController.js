@@ -144,3 +144,48 @@ export async function broadcastMessage(req, res) {
     return res.status(500).json({ message: 'Failed to broadcast message' });
   }
 }
+
+export async function listMyBroadcasts(req, res) {
+  try {
+    const senderId = req.user?._id;
+    if (!mongoose.isValidObjectId(senderId)) {
+      return res.status(401).json({ message: 'Invalid user session' });
+    }
+
+    const messages = await Message.find({ sender: senderId })
+      .select('_id title content teams createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.json({
+      messages: (messages || []).map((m) => ({
+        ...m,
+        teamsCount: Array.isArray(m.teams) ? m.teams.length : 0,
+      })),
+    });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to load messages' });
+  }
+}
+
+export async function deleteMyBroadcast(req, res) {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) return res.status(400).json({ message: 'Invalid message id' });
+
+  try {
+    const senderId = req.user?._id;
+    if (!mongoose.isValidObjectId(senderId)) {
+      return res.status(401).json({ message: 'Invalid user session' });
+    }
+
+    const deleted = await Message.findOneAndDelete({ _id: id, sender: senderId }).select('_id').lean();
+    if (!deleted) return res.status(404).json({ message: 'Message not found' });
+    return res.json({ ok: true });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to delete message' });
+  }
+}
