@@ -148,7 +148,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
 
   if (!yearId || !subjectId) {
     return (
-      <div className="rounded-2xl border border-white/30 bg-white/50 p-6 shadow-xl backdrop-blur-md">
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-purple-100 p-6">
         <h2 className="text-lg font-semibold">Create Team</h2>
         <p className="mt-1 text-sm text-slate-600">Select a year and subject to create your team.</p>
       </div>
@@ -157,7 +157,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/30 bg-white/50 p-6 shadow-xl backdrop-blur-md">
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-purple-100 p-6">
         <h2 className="text-lg font-semibold">Create Team</h2>
         <p className="mt-2 text-sm text-slate-600">Loading your team status…</p>
       </div>
@@ -179,11 +179,11 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
     return (
       <div
         className={
-          'space-y-8 rounded-2xl border border-white/30 bg-white/60 p-6 shadow-xl backdrop-blur-md transition-all duration-500 ease-in-out ' +
+          'space-y-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-purple-100 p-6 ' +
           (lockedMounted ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.98]')
         }
       >
-        <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-5 text-white shadow-lg">
+        <div className="rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-6 py-5 text-white shadow-lg shadow-purple-500/20">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-white/20 shadow-sm">
@@ -204,7 +204,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
               className={
                 'inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold shadow-sm transition-all duration-500 ease-in-out ' +
                 (mentorAssigned
-                  ? 'bg-emerald-100 text-emerald-700'
+                  ? 'bg-purple-100 text-purple-700 border border-purple-200'
                   : 'bg-slate-100 text-slate-600')
               }
             >
@@ -225,7 +225,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
               <div className="text-xs font-semibold tracking-widest text-slate-500">TEAM MEMBERS</div>
               <div className="mt-1 text-sm text-slate-600">{membersForDisplay.length} member(s)</div>
             </div>
-            <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <div className="rounded-full border border-purple-200 bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
               {team?.status || 'FINALIZED'}
             </div>
           </div>
@@ -245,13 +245,13 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
                     'group rounded-xl border bg-white p-4 shadow-md transition-all duration-300 ' +
                     'hover:-translate-y-0.5 hover:shadow-lg ' +
                     (isLead
-                      ? 'border-emerald-200 ring-2 ring-emerald-100 hover:scale-[1.01]'
-                      : 'border-emerald-100')
+                      ? 'border-purple-200 ring-2 ring-purple-100 hover:scale-[1.01]'
+                      : 'border-purple-100')
                   }
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700 border border-purple-200">
                         {initials}
                       </div>
                       <div className="min-w-0">
@@ -260,7 +260,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
                       </div>
                     </div>
                     {isLead ? (
-                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold tracking-wide text-emerald-700">
+                      <span className="rounded-full bg-purple-100 px-2 py-1 text-[10px] font-bold tracking-wide text-purple-700 border border-purple-200">
                         LEAD
                       </span>
                     ) : null}
@@ -279,7 +279,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
   }
 
   return (
-    <div className="rounded-2xl border-t-4 border-emerald-500/60 border border-white/30 bg-white/60 p-6 shadow-xl backdrop-blur-md transition-all duration-500 ease-in-out">
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-purple-100 p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold">Create Team</h2>
@@ -300,12 +300,12 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
             <input
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-gray-300 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-white/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+              className="mt-1 w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-purple-50 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
               placeholder="Enter your team name"
             />
           </Field>
 
-          <div className="rounded-2xl border border-white/30 bg-white/50 p-5 shadow-sm backdrop-blur-md">
+          <div className="rounded-2xl border border-purple-100 bg-white p-5 shadow-md transition-all duration-300 hover:shadow-lg">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-900">Members</p>
@@ -318,13 +318,13 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
 
             <div className="mt-4 grid gap-4">
               {members.map((m, idx) => (
-                <div key={idx} className="rounded-2xl border border-white/30 bg-white/60 p-4 shadow-sm backdrop-blur-md transition hover:shadow-md">
+                <div key={idx} className="rounded-2xl border border-purple-100 bg-white p-4 shadow-md transition-all duration-300 hover:shadow-lg">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="text-sm font-semibold text-slate-900">
                       {idx === 0 ? 'Leader' : idx === 3 ? `Member ${idx + 1} (Optional)` : `Member ${idx + 1}`}
                     </div>
                     {idx === 0 ? (
-                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-700">
+                      <span className="rounded-full bg-purple-100 px-2 py-1 text-[11px] font-semibold text-purple-700 border border-purple-200">
                         Leader
                       </span>
                     ) : null}
@@ -336,7 +336,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
                       <input
                         value={m.name}
                         onChange={(e) => updateMember(idx, { name: e.target.value })}
-                        className="mt-1 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-white/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+                        className="mt-1 w-full rounded-xl border border-purple-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-purple-50 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
                         placeholder={idx === 0 ? 'Your name' : 'Member name'}
                       />
                     </div>
@@ -347,10 +347,10 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
                         onChange={(e) => updateMember(idx, { email: e.target.value })}
                         disabled={idx === 0}
                         className={
-                          'mt-1 w-full rounded-xl border px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:ring-2 focus:ring-emerald-500 ' +
+                          'mt-1 w-full rounded-xl border px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:ring-2 focus:ring-purple-200 ' +
                           (idx === 0
                             ? 'cursor-not-allowed border-gray-300 bg-white/40 opacity-80'
-                            : 'border-gray-300 bg-white/70 hover:bg-white/80 focus:border-emerald-500')
+                            : 'border-purple-200 bg-white hover:bg-purple-50 focus:border-purple-400')
                         }
                         placeholder={idx === 0 ? user?.email : 'member@college.edu'}
                       />
@@ -360,7 +360,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
                       <input
                         value={m.rollNumber}
                         onChange={(e) => updateMember(idx, { rollNumber: e.target.value })}
-                        className="mt-1 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-white/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+                        className="mt-1 w-full rounded-xl border border-purple-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition hover:bg-purple-50 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
                         placeholder="e.g. 22CS001"
                       />
                     </div>
@@ -379,7 +379,7 @@ export default function CreateTeam({ yearId, subjectId, yearLabel, subjectLabel 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-emerald-700 hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
             {submitting ? 'Submitting…' : 'Create Team (Finalize)'}
           </button>

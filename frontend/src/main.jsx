@@ -16,7 +16,6 @@ if (!clientId) {
   } else {
     // In production builds, do not mount the OAuth provider without a client id.
     // (Student login will not work until configured.)
-    // eslint-disable-next-line no-console
     console.error(msg)
   }
 }

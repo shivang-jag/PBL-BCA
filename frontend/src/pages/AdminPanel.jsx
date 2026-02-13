@@ -1,22 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import DashboardHeader from '../components/DashboardHeader'
-
-function Card({ title, desc, to }) {
-  return (
-    <Link
-      to={to}
-      className="group rounded-2xl border border-white/30 bg-white/60 p-6 shadow-xl backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/70 hover:shadow-2xl"
-    >
-      <div className="text-lg font-semibold text-slate-900">{title}</div>
-      <div className="mt-1 text-sm text-slate-600">{desc}</div>
-      <div className="mt-4 text-xs font-semibold text-emerald-700 transition group-hover:text-emerald-800">
-        Open →
-      </div>
-    </Link>
-  )
-}
+import DashboardLayout from '../components/DashboardLayout'
+import HeroWelcomeCard from '../components/HeroWelcomeCard'
 
 export default function AdminPanel() {
   const { user } = useAuth()
@@ -28,23 +14,50 @@ export default function AdminPanel() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-100 text-slate-900">
-      <DashboardHeader />
+    <DashboardLayout>
       <div
         className={
-          'mx-auto max-w-6xl px-4 py-10 transition-all duration-500 ease-out ' +
+          'transition-all duration-500 ease-out ' +
           (mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2')
         }
       >
-        <h1 className="text-2xl font-semibold tracking-tight">Admin Panel</h1>
-        <p className="mt-1 text-sm text-slate-600">Signed in as {user?.email || '—'}</p>
+        <HeroWelcomeCard
+          user={user}
+          title="Admin Panel"
+          subtitle="Manage teams, read broadcasts, and provision teacher accounts."
+          metaItems={[
+            { key: 'scope', label: '🛡️ Access', value: 'Admin' },
+            { key: 'area', label: '📌 Workspace', value: 'PBL Management' },
+          ]}
+        />
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card title="Teams" desc="View teams, sync mentors, open team details." to="/admin/teams" />
-          <Card title="Messages" desc="Read-only teacher broadcast messages." to="/admin/messages" />
-          <Card title="Teachers" desc="Provision teacher accounts and view teacher list." to="/admin/teachers" />
+          <Link
+            to="/admin/teams"
+            className="group rounded-2xl border border-purple-100 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <div className="text-lg font-semibold text-slate-900">Teams</div>
+            <div className="mt-1 text-sm text-slate-600">View teams, sync mentors, open team details.</div>
+            <div className="mt-4 text-xs font-semibold text-purple-700 transition group-hover:text-purple-800">Open →</div>
+          </Link>
+          <Link
+            to="/admin/messages"
+            className="group rounded-2xl border border-purple-100 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <div className="text-lg font-semibold text-slate-900">Messages</div>
+            <div className="mt-1 text-sm text-slate-600">Read-only teacher broadcast messages.</div>
+            <div className="mt-4 text-xs font-semibold text-purple-700 transition group-hover:text-purple-800">Open →</div>
+          </Link>
+          <Link
+            to="/admin/teachers"
+            className="group rounded-2xl border border-purple-100 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            <div className="text-lg font-semibold text-slate-900">Teachers</div>
+            <div className="mt-1 text-sm text-slate-600">Provision teacher accounts and view teacher list.</div>
+            <div className="mt-4 text-xs font-semibold text-purple-700 transition group-hover:text-purple-800">Open →</div>
+          </Link>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

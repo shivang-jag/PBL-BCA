@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import CreateTeam from '../components/CreateTeam'
-import DashboardHeader from '../components/DashboardHeader'
+import DashboardLayout from '../components/DashboardLayout'
+import HeroWelcomeCard from '../components/HeroWelcomeCard'
+import Card from '../components/Card'
 
 export default function StudentDashboard() {
   const { user } = useAuth()
@@ -19,8 +21,8 @@ export default function StudentDashboard() {
   const [loadingMessages, setLoadingMessages] = useState(true)
   const [messagesError, setMessagesError] = useState('')
 
-  const [mentor, setMentor] = useState(null)
-  const [loadingMentor, setLoadingMentor] = useState(false)
+  const [team, setTeam] = useState(null)
+  const [loadingTeam, setLoadingTeam] = useState(false)
 
   const [mounted, setMounted] = useState(false)
 
@@ -102,24 +104,24 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     if (!yearId || !subjectId) {
-      setMentor(null)
+      setTeam(null)
       return
     }
     let alive = true
-    async function loadMentor() {
-      setLoadingMentor(true)
+    async function loadTeam() {
+      setLoadingTeam(true)
       try {
         const { data } = await api.get('/teams/my', { params: { yearId, subjectId } })
         if (!alive) return
-        setMentor(data.team?.mentor || null)
+        setTeam(data.team || null)
       } catch {
         if (!alive) return
-        setMentor(null)
+        setTeam(null)
       } finally {
-        if (alive) setLoadingMentor(false)
+        if (alive) setLoadingTeam(false)
       }
     }
-    loadMentor()
+    loadTeam()
     return () => {
       alive = false
     }
@@ -139,153 +141,56 @@ export default function StudentDashboard() {
 
   const progress = ((yearDone ? 1 : 0) + (subjectDone ? 1 : 0) + (ready ? 1 : 0)) / 3
 
+  const mentorLabel =
+    (team?.mentor?.name && String(team.mentor.name).trim()) ||
+    (team?.mentor?.email && String(team.mentor.email).trim()) ||
+    (yearId && subjectId ? (loadingTeam ? 'Loading…' : 'Mentor Not Assigned') : 'Select year & subject')
+
+  const submissionLabel = yearId && subjectId ? (team ? (team.status || 'FINALIZED') : 'Not Submitted') : '—'
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-100 text-slate-900">
-      <DashboardHeader />
+    <DashboardLayout>
       <div
         className={
-          'mx-auto max-w-6xl px-4 py-10 transition-all duration-500 ease-out ' +
+          'transition-all duration-500 ease-out ' +
           (mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2')
         }
       >
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Student Dashboard</h1>
-            <p className="mt-1 text-sm text-slate-700">Signed in as {user?.name} • {user?.email}</p>
-          </div>
-        </div>
+        <HeroWelcomeCard
+          user={user}
+          mentorLabel={mentorLabel}
+          submissionLabel={submissionLabel}
+          subtitle="Your academic workspace for PBL submissions and mentor announcements."
+        />
 
-        <div className="mt-8 rounded-2xl border-t-4 border-emerald-500/60 border border-white/30 bg-white/60 p-6 shadow-xl backdrop-blur-md">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-slate-600">Academic Setup</p>
-              <p className="mt-0.5 text-sm font-semibold text-slate-900">Select year and subject</p>
-            </div>
-            <div className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Step {stepNumber} / 3
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-white/50">
-              <div
-                className="h-2 rounded-full bg-emerald-600 transition-all duration-300"
-                style={{ width: `${Math.round(progress * 100)}%` }}
-              />
-            </div>
-            <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600">
-              <span className={yearDone ? 'font-semibold text-emerald-700' : ''}>Year</span>
-              <span className={subjectDone ? 'font-semibold text-emerald-700' : ''}>Subject</span>
-              <span className={ready ? 'font-semibold text-emerald-700' : ''}>Finalize</span>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="year-select" className="block text-xs font-medium text-slate-700">
-                Select Year
-              </label>
-              <select
-                id="year-select"
-                value={yearId}
-                onChange={(e) => setYearId(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-3 text-sm text-slate-900 outline-none transition hover:bg-white/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-                disabled={loadingYears}
-              >
-                <option value="">{loadingYears ? 'Loading…' : 'Choose a year'}</option>
-                {years.map((y) => (
-                  <option key={y._id} value={y._id}>
-                    {y.code || y.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="subject-select" className="block text-xs font-medium text-slate-700">
-                Select Subject
-              </label>
-              <select
-                id="subject-select"
-                value={subjectId}
-                onChange={(e) => setSubjectId(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-300 bg-white/70 px-3 py-3 text-sm text-slate-900 outline-none transition hover:bg-white/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-                disabled={!yearId || loadingSubjects}
-              >
-                <option value="">{!yearId ? 'Select year first' : loadingSubjects ? 'Loading…' : 'Choose a subject'}</option>
-                {subjects.map((s) => (
-                  <option key={s._id} value={s._id}>
-                    {s.name}
-                    {s.code ? ` (${s.code})` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="sm:col-span-2">
-              {error ? (
-                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-800">
-                  {error}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        {yearId && subjectId ? (
-          <div className="mt-6 flex justify-end">
-            <div
-              className={
-                'inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold shadow-sm backdrop-blur-md transition-all duration-500 ease-in-out ' +
-                (mentor?.name?.trim() || mentor?.email?.trim()
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-slate-100 text-slate-600')
-              }
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
-                <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Zm0 2.25c-4.26 0-7.5 2.16-7.5 4.5a1.5 1.5 0 0 0 3 0c0-.63 1.77-1.5 4.5-1.5s4.5.87 4.5 1.5a1.5 1.5 0 0 0 3 0c0-2.34-3.24-4.5-7.5-4.5Z" />
-              </svg>
-              <span className="text-[11px] tracking-wide opacity-80">Assigned Mentor</span>
-              <span className="max-w-[260px] truncate">
-                {loadingMentor
-                  ? 'Loading…'
-                  : mentor?.name?.trim()
-                    ? mentor.name
-                    : mentor?.email?.trim()
-                      ? mentor.email
-                      : 'Mentor Not Assigned'}
-              </span>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="mt-4 overflow-hidden rounded-2xl border border-white/30 bg-white/60 shadow-xl backdrop-blur-md transition hover:shadow-2xl">
-          <div className="px-5 py-4">
-            <h2 className="text-base font-semibold">📢 Mentor Announcements</h2>
-            <p className="mt-1 text-xs text-slate-500">Read-only announcements from your mentor.</p>
-          </div>
-
-          {messagesError ? (
-            <div className="px-5 pb-5">
+        <div className="mt-6">
+          <Card
+            id="announcements"
+            title="Announcements"
+            subtitle="Mentor broadcasts (read-only)."
+            className="bg-orange-50 border-orange-200"
+          >
+            {messagesError ? (
               <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-800">
                 {messagesError}
               </div>
-            </div>
-          ) : null}
+            ) : null}
 
-          <div className="px-5 pb-5">
             {loadingMessages ? (
-              <div className="text-sm text-slate-600">Loading announcements…</div>
+              <div className="text-sm text-slate-700">Loading announcements…</div>
             ) : messages.length ? (
               <div className="grid gap-3">
                 {messages.map((m) => (
-                  <div key={m._id} className="rounded-2xl border border-white/30 bg-white/60 p-4 shadow-sm backdrop-blur-md">
+                  <div
+                    key={m._id}
+                    className="rounded-2xl border border-orange-100 bg-white p-4 shadow-md transition-all duration-300 hover:shadow-lg"
+                  >
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-slate-900">{m.title}</p>
-                        <p className="mt-0.5 text-xs text-slate-500">Mentor: {m.senderEmail || '—'}</p>
+                        <p className="mt-0.5 text-xs text-slate-600">Mentor: {m.senderEmail || '—'}</p>
                       </div>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-600">
                         {m.createdAt ? new Date(m.createdAt).toLocaleString() : '—'}
                       </p>
                     </div>
@@ -294,36 +199,168 @@ export default function StudentDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-sm text-slate-600">No announcements yet.</div>
+              <div className="text-sm text-slate-700">No announcements yet.</div>
             )}
-          </div>
+          </Card>
         </div>
 
-        <div className="mt-6">
-          <CreateTeam
-            yearId={yearId}
-            subjectId={subjectId}
-            yearLabel={
-              selectedYear
-                ? (() => {
-                    const displayName = selectedYear.name ?? selectedYear.code ?? '—'
-                    const suffix = selectedYear.name && selectedYear.code ? ` (${selectedYear.code})` : ''
-                    return `${displayName}${suffix}`
-                  })()
-                : ''
-            }
-            subjectLabel={
-              selectedSubject
-                ? (() => {
-                    const displayName = selectedSubject.name ?? selectedSubject.code ?? '—'
-                    const suffix = selectedSubject.name && selectedSubject.code ? ` (${selectedSubject.code})` : ''
-                    return `${displayName}${suffix}`
-                  })()
-                : ''
-            }
-          />
+        <div className="mt-6 grid gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            <Card
+              title="Academic Setup"
+              subtitle="Select year and subject to unlock team submission."
+              right={
+                <div className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700 border border-purple-200">
+                  Step {stepNumber} / 3
+                </div>
+              }
+            >
+              <div className="mt-1">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-purple-100">
+                  <div
+                    className="h-2 rounded-full bg-purple-600 transition-all duration-300"
+                    style={{ width: `${Math.round(progress * 100)}%` }}
+                  />
+                </div>
+                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600">
+                  <span className={yearDone ? 'font-semibold text-purple-700' : ''}>Year</span>
+                  <span className={subjectDone ? 'font-semibold text-purple-700' : ''}>Subject</span>
+                  <span className={ready ? 'font-semibold text-purple-700' : ''}>Finalize</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="year-select" className="block text-xs font-medium text-slate-700">
+                    Select Year
+                  </label>
+                  <select
+                    id="year-select"
+                    value={yearId}
+                    onChange={(e) => setYearId(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-purple-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition hover:bg-purple-50 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+                    disabled={loadingYears}
+                  >
+                    <option value="">{loadingYears ? 'Loading…' : 'Choose a year'}</option>
+                    {years.map((y) => (
+                      <option key={y._id} value={y._id}>
+                        {y.code || y.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="subject-select" className="block text-xs font-medium text-slate-700">
+                    Select Subject
+                  </label>
+                  <select
+                    id="subject-select"
+                    value={subjectId}
+                    onChange={(e) => setSubjectId(e.target.value)}
+                    className="mt-1 w-full rounded-xl border border-purple-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition hover:bg-purple-50 focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+                    disabled={!yearId || loadingSubjects}
+                  >
+                    <option value="">{!yearId ? 'Select year first' : loadingSubjects ? 'Loading…' : 'Choose a subject'}</option>
+                    {subjects.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                        {s.code ? ` (${s.code})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2">
+                  {error ? (
+                    <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-800">
+                      {error}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </Card>
+
+            <Card
+              id="teams"
+              title="Team Overview"
+              subtitle="Your team and mentor information for the selected subject."
+            >
+              {!yearId || !subjectId ? (
+                <div className="text-sm text-slate-600">Select year and subject to view your team overview.</div>
+              ) : loadingTeam ? (
+                <div className="text-sm text-slate-600">Loading team…</div>
+              ) : team ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-purple-200 bg-purple-100 p-4">
+                    <div className="text-xs font-semibold text-purple-700">Team</div>
+                    <div className="mt-1 text-lg font-bold tracking-tight text-slate-900">{team.teamName || 'Team'}</div>
+                    <div className="mt-2 text-xs text-slate-700">Members: {Array.isArray(team.members) ? team.members.length : 0}</div>
+                  </div>
+                  <div className="rounded-2xl border border-purple-200 bg-purple-100 p-4">
+                    <div className="text-xs font-semibold text-purple-700">Mentor</div>
+                    <div className="mt-1 text-sm font-semibold text-slate-900">{mentorLabel}</div>
+                    <div className="mt-2 text-xs text-slate-700">Status: {team.status || 'FINALIZED'}</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-slate-600">No team submission found for this subject yet.</div>
+              )}
+            </Card>
+
+            <Card
+              id="submission"
+              title="Submission Status"
+              subtitle="Submit your team once; submission becomes FINALIZED."
+            >
+              <CreateTeam
+                yearId={yearId}
+                subjectId={subjectId}
+                yearLabel={
+                  selectedYear
+                    ? (() => {
+                        const displayName = selectedYear.name ?? selectedYear.code ?? '—'
+                        const suffix = selectedYear.name && selectedYear.code ? ` (${selectedYear.code})` : ''
+                        return `${displayName}${suffix}`
+                      })()
+                    : ''
+                }
+                subjectLabel={
+                  selectedSubject
+                    ? (() => {
+                        const displayName = selectedSubject.name ?? selectedSubject.code ?? '—'
+                        const suffix = selectedSubject.name && selectedSubject.code ? ` (${selectedSubject.code})` : ''
+                        return `${displayName}${suffix}`
+                      })()
+                    : ''
+                }
+              />
+            </Card>
+
+          </div>
+
+          <div className="space-y-6 lg:col-span-4">
+            <Card title="Quick Info" subtitle="Academic snapshot." className="sticky top-6">
+              <div className="grid gap-3">
+                <div className="rounded-2xl border border-purple-200 bg-purple-100 p-4">
+                  <div className="text-xs font-semibold text-purple-700">Academic Year</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900">{new Date().getMonth() >= 6 ? `${new Date().getFullYear()}–${String((new Date().getFullYear() + 1) % 100).padStart(2, '0')}` : `${new Date().getFullYear() - 1}–${String(new Date().getFullYear() % 100).padStart(2, '0')}`}</div>
+                </div>
+
+                <div className="rounded-2xl border border-purple-200 bg-purple-100 p-4">
+                  <div className="text-xs font-semibold text-purple-700">Selected</div>
+                  <div className="mt-1 text-sm text-slate-800">
+                    {selectedYear ? (selectedYear.code || selectedYear.name) : 'Year: —'}
+                  </div>
+                  <div className="mt-1 text-sm text-slate-800">
+                    {selectedSubject ? (selectedSubject.code ? `${selectedSubject.name} (${selectedSubject.code})` : selectedSubject.name) : 'Subject: —'}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
